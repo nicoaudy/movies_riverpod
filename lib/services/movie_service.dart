@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movies_riverpod/models/movie_model.dart';
+import 'package:movies_riverpod/services/movie_exception.dart';
 import 'package:movies_riverpod/utils.dart';
 
 final movieServiceProvider = Provider<MovieService>((ref) {
@@ -15,15 +16,20 @@ class MovieService {
   final Dio _dio;
 
   Future<List<MovieModel>> getMovies() async {
-    final response = await _dio.get(
-      "https://api.themoviedb.org/3/movie/popular?api_key=${_utils.movieApiKey}&language=en-US&page=1",
-    );
+    try {
+      final response = await _dio.get(
+        "https://api.themoviedb.org/3/movie/popular?api_key=${_utils.movieApiKey}&language=en-US&page=1",
+      );
 
-    final results = List<Map<String, dynamic>>.from(response.data['results']);
+      final results = List<Map<String, dynamic>>.from(response.data['results']);
 
-    List<MovieModel> movies =
-        results.map((item) => MovieModel.fromMap(item)).toList(growable: false);
+      List<MovieModel> movies = results
+          .map((item) => MovieModel.fromMap(item))
+          .toList(growable: false);
 
-    return movies;
+      return movies;
+    } on DioError catch (dioError) {
+      throw MoviesException.fromDioError(dioError);
+    }
   }
 }

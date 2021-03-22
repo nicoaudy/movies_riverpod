@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movies_riverpod/components/error_body.dart';
 import 'package:movies_riverpod/components/movie_box.dart';
 import 'package:movies_riverpod/models/movie_model.dart';
+import 'package:movies_riverpod/services/movie_exception.dart';
 import 'package:movies_riverpod/services/movie_service.dart';
 
 final movieFutureProvider =
@@ -26,8 +27,14 @@ class HomeScreen extends ConsumerWidget {
       body: watch(movieFutureProvider).when(
         loading: () => Center(child: CircularProgressIndicator()),
         error: (e, s) {
+          if (e is MoviesException) {
+            return ErrorBody(
+              message: e.message,
+              onPressed: () => context.refresh(movieFutureProvider),
+            );
+          }
           return ErrorBody(
-            message: "Error",
+            message: "Ups, something happened unexpected.",
             onPressed: () => context.refresh(movieFutureProvider),
           );
         },
@@ -37,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
               return context.refresh(movieFutureProvider);
             },
             child: GridView.extent(
-              maxCrossAxisExtent: 200,
+              maxCrossAxisExtent: 300,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               childAspectRatio: 0.7,
