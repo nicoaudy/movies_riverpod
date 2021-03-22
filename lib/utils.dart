@@ -1,0 +1,3 @@
+class Utils {
+  final movieApiKey = '';
+}
