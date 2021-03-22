@@ -9,6 +9,8 @@ class MovieModel {
     this.posterPath,
   });
 
+  String get fullImageUrl => 'https://image.tmdb.org/t/p/w200$posterPath';
+
   MovieModel copyWith({
     String title,
     String posterPath,
